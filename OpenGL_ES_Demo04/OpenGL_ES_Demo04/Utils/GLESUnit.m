@@ -69,4 +69,58 @@
     return [self loadShader:type withString:shaderString];
 }
 
++(GLuint)loadProgram:(NSString *)vertexShaderFilePath fragmentFilePath:(NSString *)fragmentFilePath
+{
+    // Load shaders    
+    GLuint vertexShader = [GLESUnit loadShader:GL_VERTEX_SHADER withFilePath:vertexShaderFilePath];
+    GLuint fragmentShader = [GLESUnit loadShader:GL_FRAGMENT_SHADER withFilePath:fragmentFilePath];
+    
+    if (vertexShader == 0) {
+        return 0;
+    }
+    
+    if (fragmentShader == 0) {
+        glDeleteShader(vertexShader);
+        return 0;
+    }
+    
+    // Create program, attach shaders.
+    GLuint programHandle = glCreateProgram();
+    if (programHandle == 0) {
+        NSLog(@"Fail to create program");
+        return 0;
+    }
+    
+    glAttachShader(programHandle, vertexShader);
+    glAttachShader(programHandle, fragmentShader);
+    
+    // Link program
+    glLinkProgram(programHandle);
+    
+    // Check the link status
+    GLint linked;
+    glGetProgramiv(programHandle, GL_LINK_STATUS, &linked);
+    if (!linked) {
+        GLint infoLen = 0;
+        glGetProgramiv(programHandle, GL_INFO_LOG_LENGTH, &infoLen);
+        
+        if (infoLen > 1) {
+            char *infoLog = malloc(sizeof(char) * infoLen);
+            glGetProgramInfoLog(programHandle, infoLen, NULL, infoLog);
+            NSLog(@"Fail to create Program : %s", infoLog);
+            
+            free(infoLog);
+        }
+        
+        glDeleteProgram(programHandle);
+        return 0;
+    }
+    
+    // Free up no longer needed shader resources
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    return programHandle;
+}
+
 @end

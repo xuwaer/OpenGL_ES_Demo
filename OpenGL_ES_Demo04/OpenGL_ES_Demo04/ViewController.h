@@ -8,6 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+@class OpenGLView;
+
 @interface ViewController : UIViewController
+
+@property (nonatomic, strong)IBOutlet OpenGLView *glView;
+@property (nonatomic, strong)IBOutlet UISegmentedControl *segment;
+
+-(IBAction)onSegmentValueChanged:(id)sender;
 
 @end

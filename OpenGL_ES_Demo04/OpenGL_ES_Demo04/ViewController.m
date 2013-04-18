@@ -7,12 +7,16 @@
 //
 
 #import "ViewController.h"
+#import "OpenGLView.h"
 
 @interface ViewController ()
 
 @end
 
 @implementation ViewController
+
+@synthesize glView;
+@synthesize segment;
 
 - (void)viewDidLoad
 {
@@ -24,6 +28,14 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)onSegmentValueChanged:(id)sender
+{
+    UISegmentedControl * segmentControl = (UISegmentedControl *)sender;
+    int index = [segmentControl selectedSegmentIndex];
+    
+    [self.glView setCurrentSurface:index];
 }
 
 @end

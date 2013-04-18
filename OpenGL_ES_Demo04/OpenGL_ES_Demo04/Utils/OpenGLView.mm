@@ -8,9 +8,45 @@
 
 #import "OpenGLView.h"
 #import "GLESUnit.h"
+#import "ParametricEquations.h"
+#import "Quaternion.h"
+
+@implementation DrawableVBO
+
+@synthesize vertexBuffer, triangleBuffer, lineBuffer;
+@synthesize vertexSize, triangleSize, lineSize;
+
+-(void)cleanup
+{
+    if (vertexBuffer != 0) {
+        glDeleteBuffers(1, &vertexBuffer);
+        vertexBuffer = 0;
+    }
+    
+    if (triangleBuffer != 0) {
+        glDeleteBuffers(1, &triangleBuffer);
+        triangleBuffer = 0;
+    }
+    
+    if (lineBuffer) {
+        glDeleteBuffers(1, &lineBuffer);
+        lineBuffer = 0;
+    }
+}
+
+@end
 
 @interface OpenGLView ()
-
+{
+    NSMutableArray *_vboArray;
+    // 当前VBO
+    DrawableVBO *_currentVBO;
+    
+    ivec2 _fingerStart;
+    Quaternion _orientation;
+    Quaternion _previousOrientation;
+    KSMatrix4 _rotationMatrix;
+}
 // 设置绘制layer
 -(void)setupLayer;
 // 设置渲染版本，以及上下文
@@ -20,19 +56,30 @@
 // 设置幀缓冲
 -(void)setupFrameBuffer;
 // 销毁缓冲，释放内存
--(void)destoryRenderAndFrameBuffer;
--(void)drawTricone;
+-(void)destroyRenderAndFrameBuffer;
+
+// ?
 -(void)setupProgram;
 // 设置投影
 -(void)setupProjection;
-// 设置刷新动作
--(void)displayLinkCallBack:(CADisplayLink *)displayLink;
+
+// 创建缓存VBO
+-(DrawableVBO *)createVBO:(int)surfaceType;
+// 设置缓存VBO
+-(void)setupVBO;
+// 销毁缓存
+-(void)destroyVBO;
+
+// 曲面图形生成
+-(ISurface *)createSurface:(int)surfaceType;
+-(vec3) mapToSphere:(ivec2) touchpoint;
+-(void)updateSurfaceTransform;
+-(void)resetRotation;
+// 绘制曲面图形
+-(void)drawSurface;
 @end
 
 @implementation OpenGLView
-
-@synthesize rotateShoulder = _rotateShoulder;
-@synthesize rotateElbow = _rotateElbow;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -43,13 +90,43 @@
     return self;
 }
 
+-(id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self setupLayer];
+        [self setupContext];
+        [self setupProgram];
+        [self setupProjection];
+        [self resetRotation];
+        
+        _vboArray = [[NSMutableArray alloc] init];
+    }
+    
+    return self;
+}
+
+-(void)layoutSubviews
+{
+    [self destroyRenderAndFrameBuffer];
+    [self setupRenderBuffer];
+    [self setupFrameBuffer];
+    
+    [self setupVBO];
+    [self render];
+}
+
 +(Class)layerClass
 {
     // 只有 [CAEAGLLayer class] 类型的 layer 才支持在其上描绘 OpenGL 内容。
     return [CAEAGLLayer class];
 }
 
-#pragma mark - set up config
+//////////////////////////////////////////////////////////////////////////////////////////
+
+#pragma mark - context config
+
+//////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  *	@brief	默认的 CALayer 是透明的，我们需要将它设置为 opaque 才能看到在它上面描绘的东西
@@ -132,7 +209,7 @@
 /**
  *	@brief	当 UIView 在进行布局变化之后，由于 layer 的宽高变化，导致原来创建的 renderbuffer不再相符，我们需要销毁既有 renderbuffer 和 framebuffer。
  */
--(void)destoryRenderAndFrameBuffer
+-(void)destroyRenderAndFrameBuffer
 {
     glDeleteFramebuffers(1, &_frameBuffer);
     _frameBuffer = 0;
@@ -140,26 +217,12 @@
     _colorRenderBuffer = 0;
 }
 
-- (void)cleanup
-{
-    if (_displayLink) {
-        [_displayLink invalidate];
-        [_displayLink removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-        _displayLink = nil;
-    }
-    
-    [self destoryRenderAndFrameBuffer];
-    
-    if (_programHandle != 0) {
-        glDeleteProgram(_programHandle);
-        _programHandle = 0;
-    }
-    
-    if (_eaglContext && [EAGLContext currentContext] == _eaglContext)
-        [EAGLContext setCurrentContext:nil];
-    
-    _eaglContext = nil;
-}
+//////////////////////////////////////////////////////////////////////////////////////////
+
+#pragma mark - shader config
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
 
 -(void)setupProgram
 {
@@ -167,42 +230,13 @@
     NSString *vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"VertexShader" ofType:@"glsl"];
     NSString *fregmentShaderPath = [[NSBundle mainBundle] pathForResource:@"FregmentShader" ofType:@"glsl"];
     
-    GLuint vertexShader = [GLESUnit loadShader:GL_VERTEX_SHADER withFilePath:vertexShaderPath];
-    GLuint fregmentShader = [GLESUnit loadShader:GL_FRAGMENT_SHADER withFilePath:fregmentShaderPath];
     
-    // Create program, attach shaders.
-    _programHandle = glCreateProgram();
-    if (!_programHandle) {
-        NSLog(@"Fail to create program");
-    }
-    
-    glAttachShader(_programHandle, vertexShader);
-    glAttachShader(_programHandle, fregmentShader);
-    
-    // Link program
-    glLinkProgram(_programHandle);
-    
-    // Check the link status
-    GLint linked;
-    glGetProgramiv(_programHandle, GL_LINK_STATUS, &linked);
-    if (!linked) {
-        GLint infoLen = 0;
-        glGetProgramiv(_programHandle, GL_INFO_LOG_LENGTH, &infoLen);
-        
-        if (infoLen > 1) {
-            char *infoLog = malloc(sizeof(char) * infoLen);
-            glGetProgramInfoLog(_programHandle, infoLen, NULL, infoLog);
-            NSLog(@"Fail to create Program : %s", infoLog);
-            
-            free(infoLog);
-        }
-        
-        glDeleteProgram(_programHandle);
-        _programHandle = 0;
+    _programHandle = [GLESUnit loadProgram:vertexShaderPath fragmentFilePath:fregmentShaderPath];
+    if (_programHandle == 0)
         return;
-    }
     
     glUseProgram(_programHandle);
+    
     // Get the attribute position slot from program
     _positionSlot = glGetAttribLocation(_programHandle, "vPosition");
     
@@ -236,17 +270,236 @@
     glUniformMatrix4fv(_projectionSlot, 1, GL_FALSE, (GLfloat*)&_projectionMatrix.m[0][0]);
 }
 
--(void)toggleDisplayLink
+//////////////////////////////////////////////////////////////////////////////////////////
+
+#pragma mark - VBO config
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+-(DrawableVBO *)createVBO:(int)surfaceType
 {
-    if (_displayLink == nil) {
-        _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkCallBack:)];
-        [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    ISurface *surface = [self createSurface:surfaceType];
+    // Get vertice from surface.
+    //
+    int vertexSize = surface->GetVertexSize();
+    int vBufferSize = surface->GetVertexCount() * vertexSize;
+    GLfloat *vertexBuf = new GLfloat[vBufferSize];
+    surface->GenerateVertices(vertexBuf);
+    
+    // Get triangle indice from surface
+    //
+    int triangleIndexCount = surface->GetTriangleIndexCount();
+    unsigned short *triangleBuf = new unsigned short[triangleIndexCount];
+    surface->GenerateTriangleIndices(triangleBuf);
+    
+    // Get line indice from surface
+    //
+    int lineIndexCount = surface->GetLineIndexCount();
+    unsigned short *lineBuf = new unsigned short[lineIndexCount];
+    surface->GenerateLineIndices(lineBuf);
+    
+    // 创建顶点缓存对象
+    GLuint vertexBuffer;
+    glGenBuffers(1, &vertexBuffer);
+    // 将顶点缓存对象设置为（或曰绑定到）当前数组缓存对象或元素缓存对象
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    // 为顶点缓存对象分配空间
+    glBufferData(GL_ARRAY_BUFFER, vBufferSize * sizeof(GLfloat), vertexBuf, GL_STATIC_DRAW);
+    
+    GLuint lineIndexBuffer;
+    glGenBuffers(1, &lineIndexBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lineIndexBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, lineIndexCount * sizeof(GLfloat), lineBuf, GL_STATIC_DRAW);
+    
+    GLuint triangleIndexBuffer;
+    glGenBuffers(1, &triangleIndexBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleIndexBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, triangleIndexCount * sizeof(GLfloat), triangleBuf, GL_STATIC_DRAW);
+    
+    delete [] vertexBuf;
+    delete [] lineBuf;
+    delete [] triangleBuf;
+    delete surface;
+    
+    DrawableVBO *vbo = [[DrawableVBO alloc] init];
+    vbo.vertexBuffer = vertexBuffer;
+    vbo.triangleBuffer = triangleIndexBuffer;
+    vbo.lineBuffer = lineIndexBuffer;
+    vbo.vertexSize = vertexSize;
+    vbo.triangleSize = triangleIndexCount;
+    vbo.lineSize = lineIndexCount;
+    
+    return vbo;
+}
+
+-(void)setupVBO
+{
+    for (int i = 0; i < SurfaceMaxCount; i++) {
+        DrawableVBO *vbo = [self createVBO:i];
+        [_vboArray addObject:vbo];
+        vbo = nil;
     }
-    else {
-        [_displayLink invalidate];
-        [_displayLink removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-        _displayLink = nil;
+    
+    [self setCurrentSurface:0];
+}
+
+-(void)destroyVBO
+{
+    for (DrawableVBO * vbo in _vboArray) {
+        [vbo cleanup];
     }
+    _vboArray = nil;
+    
+    _currentVBO = nil;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+#pragma mark - Surface config
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *  定义需要绘制的形状
+ **/
+ 
+// 球体
+const int SurfaceSphere = 0;
+// 圆锥体
+const int SurfaceCone = 1;
+// 环形
+const int SurfaceTorus = 2;
+// 三叶结
+const int SurfaceTrefoilKnot = 3;
+// 克莱因瓶
+const int SurfaceKleinBottle = 4;
+
+const int SurfaceMobiusStrip = 5;
+
+// 需要绘制的图形总数量
+const int SurfaceMaxCount = 6;
+
+-(ISurface *)createSurface:(int)surfaceType
+{
+    ISurface *surface = NULL;
+    
+    switch (surfaceType) {
+        case SurfaceSphere:
+            surface = new Sphere(2.0);
+            break;
+        case SurfaceCone:
+            surface = new Cone(4.0, 1.0);
+            break;
+        case SurfaceTorus:
+            surface = new Torus(2.0, 3.0);
+            break;
+        case SurfaceTrefoilKnot:
+            surface = new TrefoilKnot(2.4);
+            break;
+        case SurfaceKleinBottle:
+            surface = new KleinBottle(0.25);
+            break;
+        case SurfaceMobiusStrip:
+            surface = new MobiusStrip(1.4);
+            break;
+        default:
+            break;
+    }
+    
+    return surface;
+}
+
+-(void)setCurrentSurface:(int)index
+{
+    index = index % [_vboArray count];
+    _currentVBO = [_vboArray objectAtIndex:index];
+    
+    [self resetRotation];
+    [self render];
+}
+
+- (vec3) mapToSphere:(ivec2) touchpoint
+{
+    ivec2 centerPoint = ivec2(self.frame.size.width/2, self.frame.size.height/2);
+    float radius = self.frame.size.width/3;
+    float safeRadius = radius - 1;
+    
+    vec2 p = touchpoint - centerPoint;
+    
+    // Flip the Y axis because pixel coords increase towards the bottom.
+    p.y = -p.y;
+    
+    if (p.Length() > safeRadius) {
+        float theta = atan2(p.y, p.x);
+        p.x = safeRadius * cos(theta);
+        p.y = safeRadius * sin(theta);
+    }
+    
+    float z = sqrt(radius * radius - p.LengthSquared());
+    vec3 mapped = vec3(p.x, p.y, z);
+    return mapped / radius;
+}
+
+-(void)updateSurfaceTransform
+{
+    ksMatrixLoadIdentity(&_modelViewMatrix);
+    
+    ksTranslate(&_modelViewMatrix, 0.0, 0.0, -7);
+    
+    ksMatrixMultiply(&_modelViewMatrix, &_rotationMatrix, &_modelViewMatrix);
+    
+    // Load the model-view matrix
+    glUniformMatrix4fv(_modelViewSlot, 1, GL_FALSE, (GLfloat*)&_modelViewMatrix.m[0][0]);
+}
+
+-(void)resetRotation
+{
+    ksMatrixLoadIdentity(&_rotationMatrix);
+    _previousOrientation.ToIdentity();
+    _orientation.ToIdentity();
+}
+
+-(void)drawSurface
+{
+    if (_currentVBO == nil)
+        return;
+    
+    glBindBuffer(GL_ARRAY_BUFFER, [_currentVBO vertexBuffer]);
+    glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, GL_FALSE, [_currentVBO vertexSize] * sizeof(GLfloat), 0);
+    glEnableVertexAttribArray(_positionSlot);
+    
+    glVertexAttrib4f(_colorSlot, 1.0, 0.0, 0.0, 1.0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, [_currentVBO triangleBuffer]);
+    glDrawElements(GL_TRIANGLES, [_currentVBO triangleSize], GL_UNSIGNED_SHORT, 0);
+    
+    glVertexAttrib4f(_colorSlot, 0.0, 0.0, 0.0, 1.0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, [_currentVBO lineBuffer]);
+    glDrawElements(GL_LINES, [_currentVBO lineSize], GL_UNSIGNED_SHORT, 0);
+    
+    glDisableVertexAttribArray(_positionSlot);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+#pragma mark - public method
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)cleanup
+{
+    [self destroyVBO];
+    
+    [self destroyRenderAndFrameBuffer];
+    
+    if (_programHandle != 0) {
+        glDeleteProgram(_programHandle);
+        _programHandle = 0;
+    }
+    
+    if (_eaglContext && [EAGLContext currentContext] == _eaglContext)
+        [EAGLContext setCurrentContext:nil];
+    
+    _eaglContext = nil;
 }
 
 /*
@@ -258,122 +511,32 @@
  }
  */
 
--(void)layoutSubviews
-{
-    [self setupLayer];
-    [self setupContext];
-    [self setupRenderBuffer];
-    [self setupFrameBuffer];
-    [self setupProgram];
-    [self setupProjection];
-    
-    [self resetTransform];
-    [self render];
-}
-
--(void)displayLinkCallBack:(CADisplayLink *)displayLink
-{
-    _rotateColorCube += displayLink.duration * 90;
-    [self render];
-}
-
-
--(void)resetTransform
-{
-}
-
-#pragma mark - getter/setter
-
--(void)setRotateShoulder:(float)inRotateShoulder
-{
-    _rotateShoulder = inRotateShoulder;
-    [self updateShoulderTransform];
-    [self render];
-}
-
--(float)rotateShoulder
-{
-    return _rotateShoulder;
-}
-
--(void)setRotateElbow:(float)inRotateElbow
-{
-    _rotateElbow = inRotateElbow;
-    [self updateElbowTransform];
-    [self render];
-}
-
--(float)rotateElbow
-{
-    return _rotateElbow;
-}
-
-#pragma makr - matrix change
-
--(void)updateShoulderTransform
-{
-    // 更新胳膊的模型视图变换
-    // 旋转胳膊
-    ksMatrixLoadIdentity(&_shouldModelViewMatrix);
-    ksMatrixTranslate(&_shouldModelViewMatrix, 0.0, 0.0, -5.5);
-    ksMatrixRotate(&_shouldModelViewMatrix, self.rotateShoulder, 0.0, 0.0, 1.0);
-    ksMatrixCopy(&_modelViewMatrix, &_shouldModelViewMatrix);
-    ksMatrixScale(&_modelViewMatrix, 1.5, 0.6, 0.6);
-    glUniformMatrix4fv(_modelViewSlot, 1, GL_FALSE, (GLfloat *)&_modelViewMatrix.m[0][0]);
-}
-
--(void)updateElbowTransform
-{
-    // 更新手臂的模型变换
-    // 旋转手臂
-    // 更新手臂的模型视图矩阵时，我们是在胳膊的模型视图矩阵基础上进行的，也就是说对胳膊的模型变换（在本列中是旋转）也会对手臂产生影响
-    ksMatrixCopy(&_elbowModelViewMatrix, &_shouldModelViewMatrix);
-    ksMatrixTranslate(&_elbowModelViewMatrix, 1.5, 0.0, 0.0);
-    ksMatrixRotate(&_elbowModelViewMatrix, self.rotateElbow, 0.0, 0.0, 1.0);
-    ksMatrixCopy(&_modelViewMatrix, &_elbowModelViewMatrix);
-    ksMatrixScale(&_modelViewMatrix, 1.0, 0.4, 0.4);
-    glUniformMatrix4fv(_modelViewSlot, 1, GL_FALSE, (GLfloat *)&_modelViewMatrix.m[0][0]);
-}
-
--(void)updateColorCubeTransform
-{
-    ksMatrixLoadIdentity(&_modelViewMatrix);
-    ksMatrixTranslate(&_modelViewMatrix, 0.0, -2.0, -5.5);
-    ksMatrixRotate(&_modelViewMatrix, _rotateColorCube, 0.0, 1.0, 0.0);
-    glUniformMatrix4fv(_modelViewSlot, 1, GL_FALSE, (GLfloat *)&_modelViewMatrix.m[0][0]);
-}
-
 #pragma mark - draw
 
 -(void)render
 {
-    ksColor red = {1.0, 0.0, 0.0, 1.0};
-    ksColor white = {1.0, 1.0, 1.0, 1.0};
-    
     //  glClearColor (GLclampf red, GLclampf green, GLclampf blue, GLclampfalpha) 用来设置清屏颜色，默认为黑色；
-    glClearColor(1.0, 0.7, 0.7, 1.0);
+    glClearColor(0.7, 0.7, 0.7, 1.0);
     //  glClear (GLbitfieldmask)用来指定要用清屏颜色来清除由mask指定的buffer，mask 可以是 GL_COLOR_BUFFER_BIT，GL_DEPTH_BUFFER_BIT和GL_STENCIL_BUFFER_BIT的自由组合。
     //  在这里我们只使用到 color buffer，所以清除的就是 color buffer。
     glClear(GL_COLOR_BUFFER_BIT);
     // 去掉被遮挡部分的渲染
     glEnable(GL_CULL_FACE);
+    // 设置视口
     glViewport(0, 0, self.frame.size.width, self.frame.size.height);
     
-    [self updateShoulderTransform];
-    [self drawCube:red];
-    
-    [self updateElbowTransform];
-    [self drawCube:white];
-    
-    [self updateColorCubeTransform];
-    [self drawColorCube];
+    [self updateSurfaceTransform];
+    [self drawSurface];
     
     //  将指定 renderbuffer 呈现在屏幕上，在这里我们指定的是前面已经绑定为当前 renderbuffer 的那个，在 renderbuffer 可以被呈现之前，必须调用renderbufferStorage:fromDrawable: 为之分配存储空间。在前面设置 drawable 属性时，我们设置 kEAGLDrawablePropertyRetainedBacking 为FALSE，表示不想保持呈现的内容，因此在下一次呈现时，应用程序必须完全重绘一次。将该设置为 TRUE 对性能和资源影像较大，因此只有当renderbuffer需要保持其内容不变时，我们才设置 kEAGLDrawablePropertyRetainedBacking  为 TRUE。
     [_eaglContext presentRenderbuffer:GL_RENDERBUFFER];
 }
 
--(void)drawCube:(ksColor)color
+-(void)drawCube:(KSColor)color
 {
+    // 这里的示例，使用的都是从CPU主存中传递顶点数据到GPU中去进行运算与渲染。
+    
+    // vertices 和 indices 都是在主存中分配的内存空间
     GLfloat vertices[] = {
         0.0f, -0.5f, 0.5f,
         0.0f, 0.5f, 0.5f,
@@ -392,6 +555,8 @@
         0, 7, 1, 6, 2, 5, 3, 4
     };
     
+    // 当需要进行渲染时，这些数据便通过 glDrawElements 或 glDrawArrays 从 CPU 主存中拷贝到 GPU 中去进行运算与渲染。
+    // 这种做法需要频繁地在 CPU 与 GPU 之间传递数据，效率低下
     glVertexAttrib4f(_colorSlot, color.r, color.g, color.b, color.a);
     glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, GL_FALSE, 0, vertices);
     glEnableVertexAttribArray(_positionSlot);
@@ -399,6 +564,7 @@
     glDrawElements(GL_LINES, sizeof(indeices) / sizeof(GLubyte), GL_UNSIGNED_BYTE, indeices);
     
     glDisableVertexAttribArray(_positionSlot);
+    
 }
 
 -(void)drawColorCube
@@ -470,5 +636,45 @@
     glDrawElements(GL_LINES, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
 }
 
+#pragma mark - Touch events
+
+- (void) touchesBegan: (NSSet*) touches withEvent: (UIEvent*) event
+{
+    UITouch* touch = [touches anyObject];
+    CGPoint location  = [touch locationInView: self];
+    
+    _fingerStart = ivec2(location.x, location.y);
+    _previousOrientation = _orientation;
+}
+
+- (void) touchesEnded: (NSSet*) touches withEvent: (UIEvent*) event
+{
+    UITouch* touch = [touches anyObject];
+    CGPoint location  = [touch locationInView: self];
+    ivec2 touchPoint = ivec2(location.x, location.y);
+    
+    vec3 start = [self mapToSphere:_fingerStart];
+    vec3 end = [self mapToSphere:touchPoint];
+    Quaternion delta = Quaternion::CreateFromVectors(start, end);
+    _orientation = delta.Rotated(_previousOrientation);
+    _orientation.ToMatrix4(&_rotationMatrix);
+    
+    [self render];
+}
+
+- (void) touchesMoved: (NSSet*) touches withEvent: (UIEvent*) event
+{
+    UITouch* touch = [touches anyObject];
+    CGPoint location  = [touch locationInView: self];
+    ivec2 touchPoint = ivec2(location.x, location.y);
+    
+    vec3 start = [self mapToSphere:_fingerStart];
+    vec3 end = [self mapToSphere:touchPoint];
+    Quaternion delta = Quaternion::CreateFromVectors(start, end);
+    _orientation = delta.Rotated(_previousOrientation);
+    _orientation.ToMatrix4(&_rotationMatrix);
+    
+    [self render];
+}
 
 @end

@@ -15,4 +15,6 @@
 
 +(GLuint)loadShader:(GLenum)type withFilePath:(NSString *)filePath;
 
++(GLuint)loadProgram:(NSString *)vertexShaderFilePath fragmentFilePath:(NSString *)fragmentFilePath;
+
 @end
