@@ -374,31 +374,52 @@
 
 -(void)drawCube:(ksColor)color
 {
-    GLfloat vertices[] = {
-        0.0f, -0.5f, 0.5f,
-        0.0f, 0.5f, 0.5f,
-        1.0f, 0.5f, 0.5f,
-        1.0f, -0.5f, 0.5f,
+    // 这里的示例，使用的都是从CPU主存中传递顶点数据到GPU中去进行运算与渲染。
+    
+    // vertices 和 indices 都是在主存中分配的内存空间
+    // Cube 顶点数据以及索引数据
+    
+    const GLfloat vertices[] = {
+        -1.5f, -1.5f, 1.5f,
+        -1.5f, 1.5f, 1.5f,
+        1.5f, 1.5f, 1.5f,
+        1.5f, -1.5f, 1.5f,
         
-        1.0f, -0.5f, -0.5f,
-        1.0f, 0.5f, -0.5f,
-        0.0f, 0.5f, -0.5f,
-        0.0f, -0.5f, -0.5f,
+        1.5f, -1.5f, -1.5f,
+        1.5f, 1.5f, -1.5f,
+        -1.5f, 1.5f, -1.5f,
+        -1.5f, -1.5f, -1.5f
     };
     
-    GLubyte indeices[] = {
-        0, 1, 1, 2, 2, 3, 3, 0,
-        4, 5, 5, 6, 6, 7, 7, 4,
-        0, 7, 1, 6, 2, 5, 3, 4
+    const GLushort indices[] = {
+        // Front face
+        3, 2, 1, 3, 1, 0,
+        
+        // Back face
+        7, 5, 4, 7, 6, 5,
+        
+        // Left face
+        0, 1, 7, 7, 1, 6,
+        
+        // Right face
+        3, 4, 5, 3, 5, 2,
+        
+        // Up face
+        1, 2, 5, 1, 5, 6,
+        
+        // Down face
+        0, 7, 3, 3, 7, 4
     };
     
-    glVertexAttrib4f(_colorSlot, color.r, color.g, color.b, color.a);
+    // 当需要进行渲染时，这些数据便通过 glDrawElements 或 glDrawArrays 从 CPU 主存中拷贝到 GPU 中去进行运算与渲染。
+    // 这种做法需要频繁地在 CPU 与 GPU 之间传递数据，效率低下
     glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, GL_FALSE, 0, vertices);
     glEnableVertexAttribArray(_positionSlot);
     
-    glDrawElements(GL_LINES, sizeof(indeices) / sizeof(GLubyte), GL_UNSIGNED_BYTE, indeices);
+    glDrawElements(GL_LINES, sizeof(indices) / sizeof(GLushort), GL_UNSIGNED_SHORT, indices);
     
     glDisableVertexAttribArray(_positionSlot);
+    
 }
 
 -(void)drawColorCube

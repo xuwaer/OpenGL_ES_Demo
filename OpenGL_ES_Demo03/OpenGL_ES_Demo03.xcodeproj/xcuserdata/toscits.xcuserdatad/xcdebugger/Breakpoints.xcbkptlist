@@ -29,5 +29,18 @@
          landmarkName = "-toggleDisplayLink"
          landmarkType = "5">
       </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "OpenGL_ES_Demo03/Utils/OpenGLView.m"
+         timestampString = "388391168.823204"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "427"
+         endingLineNumber = "427"
+         landmarkName = "-drawColorCube"
+         landmarkType = "5">
+      </FileBreakpoint>
    </FileBreakpoints>
 </Bucket>

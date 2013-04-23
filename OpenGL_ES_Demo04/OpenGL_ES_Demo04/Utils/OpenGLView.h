@@ -14,12 +14,12 @@
 
 @interface DrawableVBO : NSObject
 
-@property (nonatomic, assign)GLuint vertexBuffer;
-@property (nonatomic, assign)GLuint triangleBuffer;
-@property (nonatomic, assign)GLuint lineBuffer;
-@property (nonatomic, assign)int vertexSize;
-@property (nonatomic, assign)int triangleSize;
-@property (nonatomic, assign)int lineSize;
+@property (nonatomic, assign)GLuint vertexBuffer;       //顶点缓存buffer
+@property (nonatomic, assign)GLuint triangleBuffer;     //需要绘制的三角形缓存buffer
+@property (nonatomic, assign)GLuint lineBuffer;         //需要绘制的线条缓存buffer
+@property (nonatomic, assign)int vertexSize;            //一个顶点所占的size
+@property (nonatomic, assign)int triangleSize;          //所有三角形size
+@property (nonatomic, assign)int lineSize;              //所有线条size
 
 -(void)cleanup;
 
