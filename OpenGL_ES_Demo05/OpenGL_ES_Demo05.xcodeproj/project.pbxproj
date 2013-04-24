@@ -19,6 +19,16 @@
 		B91214F41727801800C2B1C2 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B91214F31727801800C2B1C2 /* ViewController.m */; };
 		B91214F71727801800C2B1C2 /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B91214F51727801800C2B1C2 /* ViewController.xib */; };
 		B91214FE1727804600C2B1C2 /* readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = B91214FD1727804600C2B1C2 /* readme.txt */; };
+		B91215001727A5A400C2B1C2 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B91214FF1727A5A400C2B1C2 /* QuartzCore.framework */; };
+		B91215021727A5AA00C2B1C2 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B91215011727A5AA00C2B1C2 /* OpenGLES.framework */; };
+		B91215151727A5C300C2B1C2 /* FregmentShader.glsl in Resources */ = {isa = PBXBuildFile; fileRef = B91215041727A5C300C2B1C2 /* FregmentShader.glsl */; };
+		B91215161727A5C300C2B1C2 /* GLESMath.c in Sources */ = {isa = PBXBuildFile; fileRef = B91215051727A5C300C2B1C2 /* GLESMath.c */; };
+		B91215171727A5C300C2B1C2 /* GLESUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = B91215081727A5C300C2B1C2 /* GLESUnit.m */; };
+		B91215181727A5C300C2B1C2 /* ksVector.c in Sources */ = {isa = PBXBuildFile; fileRef = B91215091727A5C300C2B1C2 /* ksVector.c */; };
+		B91215191727A5C300C2B1C2 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B912150C1727A5C300C2B1C2 /* OpenGLView.mm */; };
+		B912151A1727A5C300C2B1C2 /* readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = B912150E1727A5C300C2B1C2 /* readme.txt */; };
+		B912151B1727A5C300C2B1C2 /* ParametricSurface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B91215111727A5C300C2B1C2 /* ParametricSurface.cpp */; };
+		B912151C1727A5C300C2B1C2 /* VertexShader.glsl in Resources */ = {isa = PBXBuildFile; fileRef = B91215141727A5C300C2B1C2 /* VertexShader.glsl */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +49,24 @@
 		B91214F31727801800C2B1C2 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		B91214F61727801800C2B1C2 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
 		B91214FD1727804600C2B1C2 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.txt; sourceTree = "<group>"; };
+		B91214FF1727A5A400C2B1C2 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		B91215011727A5AA00C2B1C2 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		B91215041727A5C300C2B1C2 /* FregmentShader.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = FregmentShader.glsl; sourceTree = "<group>"; };
+		B91215051727A5C300C2B1C2 /* GLESMath.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = GLESMath.c; sourceTree = "<group>"; };
+		B91215061727A5C300C2B1C2 /* GLESMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLESMath.h; sourceTree = "<group>"; };
+		B91215071727A5C300C2B1C2 /* GLESUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLESUnit.h; sourceTree = "<group>"; };
+		B91215081727A5C300C2B1C2 /* GLESUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLESUnit.m; sourceTree = "<group>"; };
+		B91215091727A5C300C2B1C2 /* ksVector.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ksVector.c; sourceTree = "<group>"; };
+		B912150A1727A5C300C2B1C2 /* ksVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ksVector.h; sourceTree = "<group>"; };
+		B912150B1727A5C300C2B1C2 /* OpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLView.h; sourceTree = "<group>"; };
+		B912150C1727A5C300C2B1C2 /* OpenGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenGLView.mm; sourceTree = "<group>"; };
+		B912150D1727A5C300C2B1C2 /* Quaternion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Quaternion.h; sourceTree = "<group>"; };
+		B912150E1727A5C300C2B1C2 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = readme.txt; path = Utils/readme.txt; sourceTree = "<group>"; };
+		B91215101727A5C300C2B1C2 /* ParametricEquations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParametricEquations.h; sourceTree = "<group>"; };
+		B91215111727A5C300C2B1C2 /* ParametricSurface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParametricSurface.cpp; sourceTree = "<group>"; };
+		B91215121727A5C300C2B1C2 /* ParametricSurface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParametricSurface.h; sourceTree = "<group>"; };
+		B91215131727A5C300C2B1C2 /* Vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector.h; sourceTree = "<group>"; };
+		B91215141727A5C300C2B1C2 /* VertexShader.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = VertexShader.glsl; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +74,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B91215021727A5AA00C2B1C2 /* OpenGLES.framework in Frameworks */,
+				B91215001727A5A400C2B1C2 /* QuartzCore.framework in Frameworks */,
 				B91214DB1727801800C2B1C2 /* UIKit.framework in Frameworks */,
 				B91214DD1727801800C2B1C2 /* Foundation.framework in Frameworks */,
 				B91214DF1727801800C2B1C2 /* CoreGraphics.framework in Frameworks */,
@@ -75,6 +105,8 @@
 		B91214D91727801800C2B1C2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B91215011727A5AA00C2B1C2 /* OpenGLES.framework */,
+				B91214FF1727A5A400C2B1C2 /* QuartzCore.framework */,
 				B91214DA1727801800C2B1C2 /* UIKit.framework */,
 				B91214DC1727801800C2B1C2 /* Foundation.framework */,
 				B91214DE1727801800C2B1C2 /* CoreGraphics.framework */,
@@ -85,11 +117,13 @@
 		B91214E01727801800C2B1C2 /* OpenGL_ES_Demo05 */ = {
 			isa = PBXGroup;
 			children = (
+				B91215031727A5C300C2B1C2 /* Utils */,
 				B91214E91727801800C2B1C2 /* AppDelegate.h */,
 				B91214EA1727801800C2B1C2 /* AppDelegate.m */,
 				B91214F21727801800C2B1C2 /* ViewController.h */,
 				B91214F31727801800C2B1C2 /* ViewController.m */,
 				B91214F51727801800C2B1C2 /* ViewController.xib */,
+				B912150E1727A5C300C2B1C2 /* readme.txt */,
 				B91214E11727801800C2B1C2 /* Supporting Files */,
 			);
 			path = OpenGL_ES_Demo05;
@@ -108,6 +142,36 @@
 				B91214FD1727804600C2B1C2 /* readme.txt */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B91215031727A5C300C2B1C2 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				B912150F1727A5C300C2B1C2 /* Surface */,
+				B91215051727A5C300C2B1C2 /* GLESMath.c */,
+				B91215061727A5C300C2B1C2 /* GLESMath.h */,
+				B91215071727A5C300C2B1C2 /* GLESUnit.h */,
+				B91215081727A5C300C2B1C2 /* GLESUnit.m */,
+				B91215091727A5C300C2B1C2 /* ksVector.c */,
+				B912150A1727A5C300C2B1C2 /* ksVector.h */,
+				B912150B1727A5C300C2B1C2 /* OpenGLView.h */,
+				B912150C1727A5C300C2B1C2 /* OpenGLView.mm */,
+				B912150D1727A5C300C2B1C2 /* Quaternion.h */,
+				B91215131727A5C300C2B1C2 /* Vector.h */,
+				B91215041727A5C300C2B1C2 /* FregmentShader.glsl */,
+				B91215141727A5C300C2B1C2 /* VertexShader.glsl */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		B912150F1727A5C300C2B1C2 /* Surface */ = {
+			isa = PBXGroup;
+			children = (
+				B91215101727A5C300C2B1C2 /* ParametricEquations.h */,
+				B91215111727A5C300C2B1C2 /* ParametricSurface.cpp */,
+				B91215121727A5C300C2B1C2 /* ParametricSurface.h */,
+			);
+			path = Surface;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -167,6 +231,9 @@
 				B91214F11727801800C2B1C2 /* Default-568h@2x.png in Resources */,
 				B91214F71727801800C2B1C2 /* ViewController.xib in Resources */,
 				B91214FE1727804600C2B1C2 /* readme.txt in Resources */,
+				B91215151727A5C300C2B1C2 /* FregmentShader.glsl in Resources */,
+				B912151A1727A5C300C2B1C2 /* readme.txt in Resources */,
+				B912151C1727A5C300C2B1C2 /* VertexShader.glsl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,6 +247,11 @@
 				B91214E71727801800C2B1C2 /* main.m in Sources */,
 				B91214EB1727801800C2B1C2 /* AppDelegate.m in Sources */,
 				B91214F41727801800C2B1C2 /* ViewController.m in Sources */,
+				B91215161727A5C300C2B1C2 /* GLESMath.c in Sources */,
+				B91215171727A5C300C2B1C2 /* GLESUnit.m in Sources */,
+				B91215181727A5C300C2B1C2 /* ksVector.c in Sources */,
+				B91215191727A5C300C2B1C2 /* OpenGLView.mm in Sources */,
+				B912151B1727A5C300C2B1C2 /* ParametricSurface.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
