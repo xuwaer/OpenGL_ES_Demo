@@ -18,7 +18,7 @@
 		B91214F11727801800C2B1C2 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B91214F01727801800C2B1C2 /* Default-568h@2x.png */; };
 		B91214F41727801800C2B1C2 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B91214F31727801800C2B1C2 /* ViewController.m */; };
 		B91214F71727801800C2B1C2 /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B91214F51727801800C2B1C2 /* ViewController.xib */; };
-		B91214FE1727804600C2B1C2 /* readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = B91214FD1727804600C2B1C2 /* readme.txt */; };
+		B91214FE1727804600C2B1C2 /* LightReadme.txt in Resources */ = {isa = PBXBuildFile; fileRef = B91214FD1727804600C2B1C2 /* LightReadme.txt */; };
 		B91215001727A5A400C2B1C2 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B91214FF1727A5A400C2B1C2 /* QuartzCore.framework */; };
 		B91215021727A5AA00C2B1C2 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B91215011727A5AA00C2B1C2 /* OpenGLES.framework */; };
 		B91215151727A5C300C2B1C2 /* FregmentShader.glsl in Resources */ = {isa = PBXBuildFile; fileRef = B91215041727A5C300C2B1C2 /* FregmentShader.glsl */; };
@@ -26,7 +26,7 @@
 		B91215171727A5C300C2B1C2 /* GLESUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = B91215081727A5C300C2B1C2 /* GLESUnit.m */; };
 		B91215181727A5C300C2B1C2 /* ksVector.c in Sources */ = {isa = PBXBuildFile; fileRef = B91215091727A5C300C2B1C2 /* ksVector.c */; };
 		B91215191727A5C300C2B1C2 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B912150C1727A5C300C2B1C2 /* OpenGLView.mm */; };
-		B912151A1727A5C300C2B1C2 /* readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = B912150E1727A5C300C2B1C2 /* readme.txt */; };
+		B912151A1727A5C300C2B1C2 /* ShaderReadme.txt in Resources */ = {isa = PBXBuildFile; fileRef = B912150E1727A5C300C2B1C2 /* ShaderReadme.txt */; };
 		B912151B1727A5C300C2B1C2 /* ParametricSurface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B91215111727A5C300C2B1C2 /* ParametricSurface.cpp */; };
 		B912151C1727A5C300C2B1C2 /* VertexShader.glsl in Resources */ = {isa = PBXBuildFile; fileRef = B91215141727A5C300C2B1C2 /* VertexShader.glsl */; };
 /* End PBXBuildFile section */
@@ -48,7 +48,7 @@
 		B91214F21727801800C2B1C2 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		B91214F31727801800C2B1C2 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		B91214F61727801800C2B1C2 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
-		B91214FD1727804600C2B1C2 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.txt; sourceTree = "<group>"; };
+		B91214FD1727804600C2B1C2 /* LightReadme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LightReadme.txt; sourceTree = "<group>"; };
 		B91214FF1727A5A400C2B1C2 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		B91215011727A5AA00C2B1C2 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		B91215041727A5C300C2B1C2 /* FregmentShader.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = FregmentShader.glsl; sourceTree = "<group>"; };
@@ -61,7 +61,7 @@
 		B912150B1727A5C300C2B1C2 /* OpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLView.h; sourceTree = "<group>"; };
 		B912150C1727A5C300C2B1C2 /* OpenGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenGLView.mm; sourceTree = "<group>"; };
 		B912150D1727A5C300C2B1C2 /* Quaternion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Quaternion.h; sourceTree = "<group>"; };
-		B912150E1727A5C300C2B1C2 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = readme.txt; path = Utils/readme.txt; sourceTree = "<group>"; };
+		B912150E1727A5C300C2B1C2 /* ShaderReadme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ShaderReadme.txt; path = Utils/ShaderReadme.txt; sourceTree = "<group>"; };
 		B91215101727A5C300C2B1C2 /* ParametricEquations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParametricEquations.h; sourceTree = "<group>"; };
 		B91215111727A5C300C2B1C2 /* ParametricSurface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParametricSurface.cpp; sourceTree = "<group>"; };
 		B91215121727A5C300C2B1C2 /* ParametricSurface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParametricSurface.h; sourceTree = "<group>"; };
@@ -123,7 +123,7 @@
 				B91214F21727801800C2B1C2 /* ViewController.h */,
 				B91214F31727801800C2B1C2 /* ViewController.m */,
 				B91214F51727801800C2B1C2 /* ViewController.xib */,
-				B912150E1727A5C300C2B1C2 /* readme.txt */,
+				B912150E1727A5C300C2B1C2 /* ShaderReadme.txt */,
 				B91214E11727801800C2B1C2 /* Supporting Files */,
 			);
 			path = OpenGL_ES_Demo05;
@@ -139,7 +139,7 @@
 				B91214EC1727801800C2B1C2 /* Default.png */,
 				B91214EE1727801800C2B1C2 /* Default@2x.png */,
 				B91214F01727801800C2B1C2 /* Default-568h@2x.png */,
-				B91214FD1727804600C2B1C2 /* readme.txt */,
+				B91214FD1727804600C2B1C2 /* LightReadme.txt */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -230,9 +230,9 @@
 				B91214EF1727801800C2B1C2 /* Default@2x.png in Resources */,
 				B91214F11727801800C2B1C2 /* Default-568h@2x.png in Resources */,
 				B91214F71727801800C2B1C2 /* ViewController.xib in Resources */,
-				B91214FE1727804600C2B1C2 /* readme.txt in Resources */,
+				B91214FE1727804600C2B1C2 /* LightReadme.txt in Resources */,
 				B91215151727A5C300C2B1C2 /* FregmentShader.glsl in Resources */,
-				B912151A1727A5C300C2B1C2 /* readme.txt in Resources */,
+				B912151A1727A5C300C2B1C2 /* ShaderReadme.txt in Resources */,
 				B912151C1727A5C300C2B1C2 /* VertexShader.glsl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -374,6 +374,7 @@
 				B91214FC1727801800C2B1C2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

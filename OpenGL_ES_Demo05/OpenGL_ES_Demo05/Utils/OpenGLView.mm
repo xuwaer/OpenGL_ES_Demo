@@ -89,6 +89,12 @@
 
 @implementation OpenGLView
 
+@synthesize lightPosition = _lightPosition;
+@synthesize ambient = _ambient;
+@synthesize diffuse = _diffuse;
+@synthesize specular = _specular;
+@synthesize shininess = _shininess;
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -438,7 +444,6 @@
     vbo.lineSize = sizeof(indices) / sizeof(GLushort);
     vbo.triangleBuffer = triangleBuffer;
     vbo.triangleSize = sizeof(indices) / sizeof(GLushort);
-    vbo.index = SurfaceCube;
     
     return vbo;
 }
@@ -617,6 +622,43 @@ const int SurfaceMaxCount = 6;
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, [_currentVBO lineBuffer]);
     glDrawElements(GL_LINES, [_currentVBO lineSize], GL_UNSIGNED_SHORT, 0);
     glDisableVertexAttribArray(_positionSlot);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+#pragma mark - Getter/Setter
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+-(void)setAmbient:(KSColor)inAmbient
+{
+    _ambient = inAmbient;
+    [self render];
+}
+
+-(void)setDiffuse:(KSColor)inDiffuse
+{
+    _diffuse = inDiffuse;
+    [self render];
+}
+
+-(void)setSpecular:(KSColor)inSpecular
+{
+    _specular = inSpecular;
+    [self render];
+}
+
+-(void)setShininess:(GLfloat)inShininess
+{
+    _shininess = inShininess;
+    [self render];
+}
+
+-(void)setLightPosition:(KSVec3)inLightPosition
+{
+    _lightPosition = inLightPosition;
+    [self render];
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

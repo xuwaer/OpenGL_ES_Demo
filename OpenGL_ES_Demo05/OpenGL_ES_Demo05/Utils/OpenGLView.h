@@ -39,11 +39,33 @@
     GLuint _projectionSlot;
     GLuint _colorSlot;
     
+    GLuint _normalMatrixSlot;
+    GLuint _lightPositionSlot;
+    
+    GLuint _normalSlot;
+    GLuint _ambientSlot;
+    GLuint _diffuseSlot;
+    GLuint _specularSlot;
+    GLuint _shininessSlot;
+    
     // 投影矩阵
     KSMatrix4 _projectionMatrix;
     // 变换矩阵
-    KSMatrix4 _modelViewMatrix;    
+    KSMatrix4 _modelViewMatrix;
+    
+    KSVec3 _lightPosition;
+    KSColor _ambient;
+    KSColor _diffuse;
+    KSColor _specular;
+    
+    GLfloat _shininess;
 }
+
+@property (nonatomic, assign)KSVec3 lightPosition;
+@property (nonatomic, assign)KSColor ambient;
+@property (nonatomic, assign)KSColor diffuse;
+@property (nonatomic, assign)KSColor specular;
+@property (nonatomic, assign)GLfloat shininess;
 
 // 渲染
 -(void)render;
